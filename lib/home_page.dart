@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:snake/blank_pixel.dart';
+import 'package:snake/food_pixel.dart';
+import 'package:snake/snake_pixel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,6 +14,16 @@ class _HomePageState extends State<HomePage> {
   //grid dimensions
   int rowSize = 10;
   int totalNumberOfSquares = 100;
+
+  //snake position
+  List<int> snakePos = [
+    0,
+    1,
+    2,
+  ];
+
+  //food position
+  int foodPos = 55;
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +45,13 @@ class _HomePageState extends State<HomePage> {
                   crossAxisCount: rowSize,
                 ),
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[800],
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  );
+                  if (snakePos.contains(index)) {
+                    return const SnakePixel();
+                  } else if (foodPos == index) {
+                    return FoodPixel();
+                  } else {
+                    return const BlankPixel();
+                  }
                 }),
           ),
           //play button
