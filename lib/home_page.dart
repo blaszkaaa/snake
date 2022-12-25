@@ -12,6 +12,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+enum snake_Direction { UP, DOWN, LEFT, RIGHT }
+
 class _HomePageState extends State<HomePage> {
   //grid dimensions
   int rowSize = 10;
@@ -27,16 +29,78 @@ class _HomePageState extends State<HomePage> {
   //food position
   int foodPos = 55;
 
+  //snake direction is initially to the right
+  var currentDirection = snake_Direction.RIGHT;
   //start game
   void startGame() {
     Timer.periodic(Duration(milliseconds: 200), (timer) {
       setState(() {
-        //add a new head
-        snakePos.add(snakePos.last + 1);
-        //remowe the tail
-        snakePos.removeAt(0);
+        //keep the snake moving
+        moveSnake();
+        //snake is eating food
       });
     });
+  }
+
+  void moveSnake() {
+    switch (currentDirection) {
+      case snake_Direction.RIGHT:
+        {
+          // add a head
+          //if snake is at the right wall, need to re-adjust
+          if (snakePos.last % rowSize == 9) {
+            snakePos.add(snakePos.last + 1 - rowSize);
+          } else {
+            snakePos.add(snakePos.last + 1);
+          }
+
+          //remowe tail
+          snakePos.removeAt(0);
+        }
+
+        break;
+      case snake_Direction.LEFT:
+        {
+          // add a head
+          //if snake is at the right wall, need to re-adjust
+          if (snakePos.last % rowSize == 0) {
+            snakePos.add(snakePos.last - 1 + rowSize);
+          } else {
+            snakePos.add(snakePos.last - 1);
+          }
+          //remowe tail
+          snakePos.removeAt(0);
+        }
+
+        break;
+      case snake_Direction.UP:
+        {
+          // add a head
+          if (snakePos.last < rowSize) {
+            snakePos.add(snakePos.last - rowSize + totalNumberOfSquares);
+          } else {
+            snakePos.add(snakePos.last - rowSize);
+          }
+          //remowe tail
+          snakePos.removeAt(0);
+        }
+
+        break;
+      case snake_Direction.DOWN:
+        {
+          // add a head
+          if (snakePos.last + rowSize > totalNumberOfSquares) {
+            snakePos.add(snakePos.last + rowSize - totalNumberOfSquares);
+          } else {
+            snakePos.add(snakePos.last + rowSize);
+          }
+          //remowe tail
+          snakePos.removeAt(0);
+        }
+
+        break;
+      default:
+    }
   }
 
   @override
@@ -54,17 +118,21 @@ class _HomePageState extends State<HomePage> {
             flex: 3,
             child: GestureDetector(
               onVerticalDragUpdate: (details) {
-                if (details.delta.dy > 0) {
-                  print("move down");
-                } else if (details.delta.dy < 0) {
-                  print("move up");
+                if (details.delta.dy > 0 &&
+                    currentDirection != snake_Direction.UP) {
+                  currentDirection = snake_Direction.DOWN;
+                } else if (details.delta.dy < 0 &&
+                    currentDirection != snake_Direction.DOWN) {
+                  currentDirection = snake_Direction.UP;
                 }
               },
               onHorizontalDragUpdate: (details) {
-                if (details.delta.dx > 0) {
-                  print("move right");
-                } else if (details.delta.dx < 0) {
-                  print("move left");
+                if (details.delta.dx > 0 &&
+                    currentDirection != snake_Direction.LEFT) {
+                  currentDirection = snake_Direction.RIGHT;
+                } else if (details.delta.dx < 0 &&
+                    currentDirection != snake_Direction.RIGHT) {
+                  currentDirection = snake_Direction.LEFT;
                 }
               },
               child: GridView.builder(
