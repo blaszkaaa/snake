@@ -165,9 +165,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-
-                //highscores, top 5 or 10
-                Text("Highscores..")
               ],
             ),
           ),
